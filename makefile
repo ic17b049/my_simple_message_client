@@ -1,21 +1,18 @@
 ##
 ## @file Makefile
-## Betriebssysteme Myfind Makefile
-## Beispiel 1
+## Verteilte Systeme simple_message_client
 ##
 ## @author Dominic Schebeck <ic17b049@technikum-wien.at>
 ## @author Thomas Neugschwandtner <ic17b082@technikum-wien.at>
-## @author Dominik Rychly <ic17b052@technikum-wien.at>
-## @date 2018/03/11
+## @date 2018/11/24
 ##
 ## @version 1.0
 ##
-## @todo Abklären .phony nötig
 ##
 ## ------------------------------------------------------------- variables --
 ##
 
-CC=gcc52
+CC=gcc
 CFLAGS=-DDEBUG -Wall -pedantic -Werror -Wextra -Wstrict-prototypes -fno-common -g -O3 -std=gnu11
 CP=cp
 CD=cd
@@ -23,7 +20,7 @@ MV=mv
 GREP=grep
 DOXYGEN=doxygen
 
-OBJECTS=myfind.o
+OBJECTS=simple_message_client.o
 
 EXCLUDE_PATTERN=footrulewidth
 
@@ -38,13 +35,13 @@ EXCLUDE_PATTERN=footrulewidth
 ## --------------------------------------------------------------- targets --
 ##
 
-all: myfind
+all: simple_message_client
 
-myfind: $(OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $^
+simple_message_client: $(OBJECTS)
+	$(CC) $(CFLAGS) simple_message_client.o -lsimple_message_client_commandline_handling -o my_simple_message_client
 
 clean:
-	$(RM) *.o *~ myfind
+	$(RM) *.o *~ simple_message_client
 
 distclean: clean
 	$(RM) -r doc
