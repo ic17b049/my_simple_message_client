@@ -1,0 +1,64 @@
+simple_message_client [simple_message_client.c, main(), line 1272]: Using the following options: server="localhost" port="5337", user="TMPUSER", img_url="<NULL>", message="mesage"
+simple_message_client [simple_message_client.c, submitmessage(), line 1034]: Obtained IPv6 address ::1, port number 5337 for server localhost and port 5337
+simple_message_client [simple_message_client.c, submitmessage(), line 1060]: Created IPv6 SOCK_STREAM socket
+simple_message_client [simple_message_client.c, submitmessage(), line 1073]: Connect to port 5337 (5337) of server localhost (::1) failed
+simple_message_client [simple_message_client.c, submitmessage(), line 1034]: Obtained IPv4 address 127.0.0.1, port number 5337 for server localhost and port 5337
+simple_message_client [simple_message_client.c, submitmessage(), line 1060]: Created IPv4 SOCK_STREAM socket
+simple_message_client [simple_message_client.c, submitmessage(), line 1086]: Connected to port 5337 (5337) of server localhost (127.0.0.1)
+simple_message_client [simple_message_client.c, sendrequest(), line 500]: Going to send the following message consisting of 19 bytes ...
+user=TMPUSER
+mesagesimple_message_client [simple_message_client.c, submitmessage(), line 1175]: Sent request user="TMPUSER", img_url="<NULL>", message="mesage" to server localhost (127.0.0.1)
+simple_message_client [simple_message_client.c, fshutdown(), line 204]: Trying to flush file pointer associated with socket ...
+simple_message_client [simple_message_client.c, fshutdown(), line 226]: Trying to shutdown socket asociated with file pointer ...
+simple_message_client [simple_message_client.c, fshutdown(), line 242]: Trying to close file pointer asociated with socket ...
+simple_message_client [simple_message_client.c, submitmessage(), line 1187]: Closed write part of socket
+simple_message_client [simple_message_client.c, getfullline(), line 547]: Obtained response "status=0
+" from server
+simple_message_client [simple_message_client.c, parseline(), line 615]: Obtained line "status=0" from server
+simple_message_client [simple_message_client.c, parseline(), line 646]: Wellformed server response "status=0"
+simple_message_client [simple_message_client.c, processstatus(), line 696]: Obtained status information "0" from server
+simple_message_client [simple_message_client.c, processresponse(), line 922]: Processed status of server response
+simple_message_client [simple_message_client.c, getfullline(), line 547]: Obtained response "file=vcs_tcpip_bulletin_board_response.html
+" from server
+simple_message_client [simple_message_client.c, parseline(), line 615]: Obtained line "file=vcs_tcpip_bulletin_board_response.html" from server
+simple_message_client [simple_message_client.c, parseline(), line 646]: Wellformed server response "file=vcs_tcpip_bulletin_board_response.html"
+simple_message_client [simple_message_client.c, getfullline(), line 547]: Obtained response "len=1261
+" from server
+simple_message_client [simple_message_client.c, parseline(), line 615]: Obtained line "len=1261" from server
+simple_message_client [simple_message_client.c, parseline(), line 646]: Wellformed server response "len=1261"
+simple_message_client [simple_message_client.c, processfile(), line 833]: Opening file "vcs_tcpip_bulletin_board_response.html" for writing of 1261 bytes in 4 chucks @256 bytes and a last remainder chunk @237 bytes ...
+simple_message_client [simple_message_client.c, processfile(), line 848]: Opened file "vcs_tcpip_bulletin_board_response.html" for writing of 1261 bytes in 4 chucks @256 bytes and a last remainder chunk @237 bytes ...
+simple_message_client [simple_message_client.c, processfile(), line 857]: Copied chunk 0 @256 bytes
+simple_message_client [simple_message_client.c, processfile(), line 857]: Copied chunk 1 @256 bytes
+simple_message_client [simple_message_client.c, processfile(), line 857]: Copied chunk 2 @256 bytes
+simple_message_client [simple_message_client.c, processfile(), line 857]: Copied chunk 3 @256 bytes
+simple_message_client [simple_message_client.c, processfile(), line 867]: Copied chunk 4 @237 bytes
+simple_message_client [simple_message_client.c, processfile(), line 878]: Closed file "vcs_tcpip_bulletin_board_response.html"
+simple_message_client [simple_message_client.c, processresponse(), line 928]: Processed file 0 (mandatory) in server response
+simple_message_client [simple_message_client.c, getfullline(), line 547]: Obtained response "file=ok.png
+" from server
+simple_message_client [simple_message_client.c, parseline(), line 615]: Obtained line "file=ok.png" from server
+simple_message_client [simple_message_client.c, parseline(), line 646]: Wellformed server response "file=ok.png"
+simple_message_client [simple_message_client.c, getfullline(), line 547]: Obtained response "len=2949
+" from server
+simple_message_client [simple_message_client.c, parseline(), line 615]: Obtained line "len=2949" from server
+simple_message_client [simple_message_client.c, parseline(), line 646]: Wellformed server response "len=2949"
+simple_message_client [simple_message_client.c, processfile(), line 833]: Opening file "ok.png" for writing of 2949 bytes in 11 chucks @256 bytes and a last remainder chunk @133 bytes ...
+simple_message_client [simple_message_client.c, processfile(), line 848]: Opened file "ok.png" for writing of 2949 bytes in 11 chucks @256 bytes and a last remainder chunk @133 bytes ...
+simple_message_client [simple_message_client.c, processfile(), line 857]: Copied chunk 0 @256 bytes
+simple_message_client [simple_message_client.c, processfile(), line 857]: Copied chunk 1 @256 bytes
+simple_message_client [simple_message_client.c, processfile(), line 857]: Copied chunk 2 @256 bytes
+simple_message_client [simple_message_client.c, processfile(), line 857]: Copied chunk 3 @256 bytes
+simple_message_client [simple_message_client.c, processfile(), line 857]: Copied chunk 4 @256 bytes
+simple_message_client [simple_message_client.c, processfile(), line 857]: Copied chunk 5 @256 bytes
+simple_message_client [simple_message_client.c, processfile(), line 857]: Copied chunk 6 @256 bytes
+simple_message_client [simple_message_client.c, processfile(), line 857]: Copied chunk 7 @256 bytes
+simple_message_client [simple_message_client.c, processfile(), line 857]: Copied chunk 8 @256 bytes
+simple_message_client [simple_message_client.c, processfile(), line 857]: Copied chunk 9 @256 bytes
+simple_message_client [simple_message_client.c, processfile(), line 857]: Copied chunk 10 @256 bytes
+simple_message_client [simple_message_client.c, processfile(), line 867]: Copied chunk 11 @133 bytes
+simple_message_client [simple_message_client.c, processfile(), line 878]: Closed file "ok.png"
+simple_message_client [simple_message_client.c, processresponse(), line 939]: Processed file 1 (optional) in server response
+simple_message_client [simple_message_client.c, parseline(), line 610]: Retrieved EOF from server
+simple_message_client [simple_message_client.c, submitmessage(), line 1200]: Obtained response with status="0" from server localhost (127.0.0.1)
+simple_message_client [simple_message_client.c, submitmessage(), line 1217]: Closed read part of socket

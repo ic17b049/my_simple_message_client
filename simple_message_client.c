@@ -7,46 +7,157 @@
 #include <simple_message_client_commandline_handling.h>
 #include <unistd.h>
 
-void usage(FILE *stream, const char *cmnd, int exitcode);
-int sendall(int s, char *buf, int *len);
-int connectToServer(const char *server, const char *port);
+
+#define verb(...)                                                                                          \
+  if (verbose) {                                                                                              \
+    printf("%s [%s,%s(), line %i]: ", prgname, __FILE__, __func__, __LINE__);\
+	printf(__VA_ARGS__);\
+    printf("\n");\
+  }
+
+
+#define err(...) fprintf(stderr, "%s: ", prgname);fprintf(stderr, __VA_ARGS__);fprintf(stderr, "\n");\
+
+  
+
+static void usage(FILE *stream, const char *cmnd, int exitcode);
+static int connectToServer(const char *server, const char *port);
+
+int verbose;
+const char *prgname;
+
 
 int main(const int argc, const char * const argv[])
 {
+    prgname = argv[0];
 
-	const char *server;
-	const char *port;
-	const char *user;
-	const char *message;
-	const char *img_url;
-	int verbose;
+	const char *server, *port, *user, *message, *img_url;
 	int sfd;
+	
+	
+	FILE* fpw;
+	FILE* fpr;
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t read;
+	
+	FILE* fpwNewFile2 = NULL;
 
-	smc_parsecommandline(argc, argv, usage, &server, &port, &user, &message,
-	&img_url, &verbose);
-
-	printf("Server:  %s\n", server);
-	printf("Port:    %s\n", port);
-	printf("User:    %s\n", user);
-	printf("Message: %s\n", message);
-	printf("Img_url: %s\n", img_url);
-	printf("Verbose: %i\n", verbose);
-
+	int statusResp = 0;
+	
+	smc_parsecommandline(argc, argv, usage, &server, &port, &user, &message,&img_url, &verbose);
+    verb("Using the following options: server=\"%s\" port=\"%s\", user=\"%s\", img_url=\"%s\", message=\"%s\"", server, port, user, img_url, message );
+	
 	sfd = connectToServer(server, port);
 
+	fpw = fdopen(sfd, "w");
+	
+	
+	if(fpw == NULL){
+		err("fdopen failed");
+	}
+	
+	
+	fprintf(fpw, "user=%s\n", user);
+	if(img_url != NULL) fprintf(fpw, "img=%s\n", img_url);
+	fprintf(fpw, "%s", message);
+	fflush(fpw);	
+	if(shutdown(sfd, SHUT_WR) == -1){
+		fclose(fpw);
+		err("shutdown failed");
+	}
+	
+	fpr = fdopen(sfd, "r");	
+	if(fpw == NULL){
+		fclose(fpw);
+		close(sfd);
+		err("fdopen failed");
+	}	
+	
+	int currentState = 0;
+	while(currentState !=-1){
+		char *ptr;
+		read = getline(&line, &len, fpr);
+		if(line[read-1]== '\n') line[read-1]= '\0';
+
+		if(read == -1){
+			currentState = -1; // EOF
+		}else{
+
+			ptr = strtok(line, "=");
+			
+			if(strcmp(ptr, "status") == 0){
+				ptr = strtok(NULL, "=");
+				char *endptr;
+				statusResp  = strtol(ptr, &endptr, 10);
+				if(*endptr != '\0'){
+						err("wrong status Format");					
+				}				
+			}
+			
+			if(strcmp(ptr, "file") == 0){
+				ptr = strtok(NULL, "=");	
+				fpwNewFile2 = fopen(ptr, "w");
+					if(fpwNewFile2 == NULL){
+						fclose(fpr);
+						fclose(fpw);
+						close(sfd);
+						err("fopen failed");
+					}
+			}
+
+			if(strcmp(ptr, "len") == 0){
+				ptr = strtok(NULL, "=");	
+				char *endptr;
+				long fileSize = strtol(ptr, &endptr, 10);
+				if(*endptr != '\0'){
+						fclose(fpwNewFile2);
+						fclose(fpr);
+						fclose(fpw);
+						close(sfd);
+						err("wrong filesize");					
+				}
+				
+				
+				while(fileSize != 0){
+					int bufferSize = 255;
+					char buff[bufferSize];
+					int tmpReadSize = bufferSize;
+					if(fileSize < bufferSize){
+						tmpReadSize = fileSize;
+					}
+					
+					int dataRead = fread(buff, sizeof(char) ,tmpReadSize, fpr);
+					fileSize = fileSize - dataRead;
+					
+					fwrite(buff, sizeof(char) ,dataRead, fpwNewFile2);
+
+				}
+
+				fflush(fpwNewFile2);
+				fclose(fpwNewFile2);
+
+
+			}
+			
+		}
+		
+	}
+	
+	free(line);
 	close(sfd);
 
-	printf("SUCCCESSS\n");
 
-	return 0;
+	return statusResp;
 }
 
-int connectToServer(const char *server, const char *port)
+static int connectToServer(const char *server, const char *port)
 {
 
 	int sfd, s;
 	struct addrinfo hints;
 	struct addrinfo *result, *rp;
+	
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC; /* Allow IPv4 or IPv6 */
@@ -55,10 +166,10 @@ int connectToServer(const char *server, const char *port)
 	s = getaddrinfo(server, port, &hints, &result);
 	if (s != 0)
 	{
-		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+		err("getaddrinfo: %s\n", gai_strerror(s));
+		freeaddrinfo(result);
 		exit(EXIT_FAILURE);
 	}
-
 	for (rp = result; rp != NULL; rp = rp->ai_next)
 	{
 		sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
@@ -71,35 +182,19 @@ int connectToServer(const char *server, const char *port)
 
 	if (rp == NULL)
 	{ /* No address succeeded */
-		fprintf(stderr, "Could not connect\n");
+
+
+	    err("Could not connect to Server")
+		freeaddrinfo(result); 
 		exit(EXIT_FAILURE);
 	}
-
+	verb("Connected to Server");
 	freeaddrinfo(result); /* No longer needed */
 	return sfd;
 }
 
-//https://cis.technikum-wien.at/documents/bic/3/vcs/download/vcs_tcpip/bgnet_A4.pdf Page 38
-int sendall(int s, char *buf, int *len)
-{
-	int total = 0; // how many bytes we've sent
-	int bytesleft = *len; // how many we have left to send
-	int n;
-	while (total < *len)
-	{
-		n = send(s, buf + total, bytesleft, 0);
-		if (n == -1)
-		{
-			break;
-		}
-		total += n;
-		bytesleft -= n;
-	}
-	*len = total; // return number actually sent here
-	return n == -1 ? -1 : 0; // return -1 on failure, 0 on success
-}
 
-void usage(FILE *stream, const char *cmnd, int exitcode)
+static void usage(FILE *stream, const char *cmnd, int exitcode)
 {
 	fprintf(stream, "usage: %s options\n", cmnd);
 	fprintf(stream, "options:\n");
