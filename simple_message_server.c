@@ -50,7 +50,7 @@ static void parse_params(int argc, char *argv[], char *port[]) {
 		static struct option long_options[] = {
 			{"port",  required_argument, NULL,  'p' },
 			{"help",  no_argument,       NULL,  'h' },
-            {0,       0,                 0,     0 }
+			{0,       0,                 0,     0 }
 		};
 
 		c = getopt_long(argc, argv, "p:h",
@@ -59,7 +59,7 @@ static void parse_params(int argc, char *argv[], char *port[]) {
 		break;
 		if (c == '?')
 		break;
-	
+		
 		switch (c) {
 		case 'p':
 			*port = optarg;
@@ -106,7 +106,7 @@ static int init_sock(char *port) {
 	
 	freeaddrinfo(servinfo);
 	if (p == NULL) {
-		warnx("Could not bind");
+		warnx("bind");
 		return -1;
 	}
 	return sockfd;
@@ -148,12 +148,12 @@ static int accept_connections(int sock) {
 
 		switch (fork()) {
 
-		case -1: /* error */
+		case -1: //ERROR
 			warn("fork");
 			close(new_fd);
 			break;
 
-		case 0: /* child */
+		case 0: //CHILD
 			close(sock);
 			if (dup2(new_fd, STDIN_FILENO) == -1) {
 				warn("dup2 in");
@@ -169,7 +169,7 @@ static int accept_connections(int sock) {
 			warn("execl");
 			_exit(EXIT_FAILURE);
 
-		default: /* parent */
+		default: //PARENT
 			close(new_fd);
 			break;
 		}
@@ -180,7 +180,6 @@ static int accept_connections(int sock) {
 
 static void sigchld_handler(int s) {
 	(void)s;
-	// waitpid() might overwrite errno, so we save and restore it:
 	int saved_errno = errno;
 	while(waitpid(-1, NULL, WNOHANG) > 0);
 	errno = saved_errno;

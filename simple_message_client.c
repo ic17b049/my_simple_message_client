@@ -9,16 +9,16 @@
 
 
 #define verb(...)                                                                                          \
-  if (verbose) {                                                                                              \
-    printf("%s [%s,%s(), line %i]: ", prgname, __FILE__, __func__, __LINE__);\
-	printf(__VA_ARGS__);\
-    printf("\n");\
-  }
+	if (verbose) {                                                                                              \
+		printf("%s [%s,%s(), line %i]: ", prgname, __FILE__, __func__, __LINE__);\
+		printf(__VA_ARGS__);\
+		printf("\n");\
+	}
 
 
 #define err(...) fprintf(stderr, "%s: ", prgname);fprintf(stderr, __VA_ARGS__);fprintf(stderr, "\n");\
 
-  
+
 
 static void usage(FILE *stream, const char *cmnd, int exitcode);
 static int connectToServer(const char *server, const char *port);
@@ -29,7 +29,7 @@ const char *prgname;
 
 int main(const int argc, const char * const argv[])
 {
-    prgname = argv[0];
+	prgname = argv[0];
 
 	const char *server, *port, *user, *message, *img_url;
 	int sfd;
@@ -46,15 +46,14 @@ int main(const int argc, const char * const argv[])
 	int statusResp = 0;
 	
 	smc_parsecommandline(argc, argv, usage, &server, &port, &user, &message,&img_url, &verbose);
-    verb("Using the following options: server=\"%s\" port=\"%s\", user=\"%s\", img_url=\"%s\", message=\"%s\"", server, port, user, img_url, message );
+	verb("Using the following options: server=\"%s\" port=\"%s\", user=\"%s\", img_url=\"%s\", message=\"%s\"", server, port, user, img_url, message );
 	
 	sfd = connectToServer(server, port);
 
 	fpw = fdopen(sfd, "w");
-	
-	
 	if(fpw == NULL){
-		err("fdopen failed");
+		err("fdopen(w) failed");
+		exit(EXIT_FAILURE);
 	}
 	
 	
@@ -64,18 +63,22 @@ int main(const int argc, const char * const argv[])
 	fflush(fpw);	
 	if(shutdown(sfd, SHUT_WR) == -1){
 		fclose(fpw);
-		err("shutdown failed");
+		err("shutdown");
+		exit(EXIT_FAILURE);
 	}
 	
 	fpr = fdopen(sfd, "r");	
 	if(fpw == NULL){
 		fclose(fpw);
 		close(sfd);
-		err("fdopen failed");
+		err("fdopen(r) failed");
+		exit(EXIT_FAILURE);
 	}	
 	
 	int currentState = 0;
+
 	while(currentState !=-1){
+		int parseOk = 0;
 		char *ptr;
 		read = getline(&line, &len, fpr);
 		if(line[read-1]== '\n') line[read-1]= '\0';
@@ -87,66 +90,71 @@ int main(const int argc, const char * const argv[])
 			ptr = strtok(line, "=");
 			
 			if(strcmp(ptr, "status") == 0){
+				parseOk = 1;
 				ptr = strtok(NULL, "=");
 				char *endptr;
 				statusResp  = strtol(ptr, &endptr, 10);
 				if(*endptr != '\0'){
-						err("wrong status Format");					
+					err("wrong status Format");	
+					exit(EXIT_FAILURE);
 				}				
 			}
 			
 			if(strcmp(ptr, "file") == 0){
+				parseOk = 1;
 				ptr = strtok(NULL, "=");	
 				fpwNewFile2 = fopen(ptr, "w");
-					if(fpwNewFile2 == NULL){
-						fclose(fpr);
-						fclose(fpw);
-						close(sfd);
-						err("fopen failed");
-					}
+				if(fpwNewFile2 == NULL){
+					fclose(fpr);
+					fclose(fpw);
+					close(sfd);
+					err("fopen(file) failed");
+					exit(EXIT_FAILURE);
+				}
 			}
 
 			if(strcmp(ptr, "len") == 0){
+				parseOk = 1;
 				ptr = strtok(NULL, "=");	
 				char *endptr;
 				long fileSize = strtol(ptr, &endptr, 10);
 				if(*endptr != '\0'){
-						fclose(fpwNewFile2);
-						fclose(fpr);
-						fclose(fpw);
-						close(sfd);
-						err("wrong filesize");					
+					fclose(fpwNewFile2);
+					fclose(fpr);
+					fclose(fpw);
+					close(sfd);
+					err("wrong filesize");
+					exit(EXIT_FAILURE);
 				}
-				
-				
+
 				while(fileSize != 0){
 					int bufferSize = 255;
 					char buff[bufferSize];
 					int tmpReadSize = bufferSize;
+					
 					if(fileSize < bufferSize){
 						tmpReadSize = fileSize;
 					}
 					
 					int dataRead = fread(buff, sizeof(char) ,tmpReadSize, fpr);
 					fileSize = fileSize - dataRead;
-					
 					fwrite(buff, sizeof(char) ,dataRead, fpwNewFile2);
 
 				}
 
 				fflush(fpwNewFile2);
 				fclose(fpwNewFile2);
-
-
 			}
 			
+			if(parseOk != 1){
+				err("Pars Error");
+				exit(EXIT_FAILURE);
+			}		
 		}
-		
 	}
-	
+
 	free(line);
 	close(sfd);
-
 
 	return statusResp;
 }
@@ -179,17 +187,16 @@ static int connectToServer(const char *server, const char *port)
 		break; /* Success */
 
 	}
-
+	
+	freeaddrinfo(result); /* No longer needed */
+	
 	if (rp == NULL)
 	{ /* No address succeeded */
-
-
-	    err("Could not connect to Server")
-		freeaddrinfo(result); 
+		err("Could not connect to Server")
 		exit(EXIT_FAILURE);
 	}
 	verb("Connected to Server");
-	freeaddrinfo(result); /* No longer needed */
+
 	return sfd;
 }
 

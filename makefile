@@ -1,10 +1,10 @@
 ##
 ## @file Makefile
-## Verteilte Systeme simple_message_client
+## Verteilte Systeme simple_message_client simple_message_server
 ##
 ## @author Dominic Schebeck <ic17b049@technikum-wien.at>
 ## @author Thomas Neugschwandtner <ic17b082@technikum-wien.at>
-## @date 2018/11/24
+## @date 2018/11/12
 ##
 ## @version 1.0
 ##
@@ -39,14 +39,14 @@ EXCLUDE_PATTERN=footrulewidth
 #all: simple_message_client
 all: simple_message_client simple_message_server
 simple_message_client: $(OBJECTSCLNT)
-	$(CC) $(CFLAGS) simple_message_client.o -lsimple_message_client_commandline_handling -o my_simple_message_client
+	$(CC) $(CFLAGS) simple_message_client.o -lsimple_message_client_commandline_handling -o simple_message_client
 
 simple_message_server: $(OBJECTSSERV)	
-	$(CC) $(CFLAGS) simple_message_server.o  -o my_simple_message_server
+	$(CC) $(CFLAGS) simple_message_server.o  -o simple_message_server
 	
 clean:
-	$(RM) *.o *~ *.png *html my_simple_message_client
-	$(RM) *.o *~ *.png *html my_simple_message_server
+	$(RM) *.o *~ *.png *html simple_message_client
+	$(RM) *.o *~ *.png *html simple_message_server
 distclean: clean
 	$(RM) -r doc
 
