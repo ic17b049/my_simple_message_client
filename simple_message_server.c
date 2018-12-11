@@ -1,3 +1,16 @@
+/**
+* @file simple_message_server.c
+* Verteilte Systeme simple_message_server file
+*
+* @author Dominic Schebeck 			<ic17b049@technikum-wien.at>
+* @author Thomas  Neugschwandtner 	<ic17b082@technikum-wien.at>
+*
+* @date 2018/11/12
+*
+* @version 1.0
+*
+*/
+
 #include <err.h>
 #include <errno.h>
 #include <getopt.h>

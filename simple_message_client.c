@@ -1,3 +1,16 @@
+/**
+* @file simple_message_client.c
+* Verteilte Systeme simple_message_client file
+*
+* @author Dominic Schebeck 			<ic17b049@technikum-wien.at>
+* @author Thomas  Neugschwandtner 	<ic17b082@technikum-wien.at>
+*
+* @date 2018/11/12
+*
+* @version 1.0
+*
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
