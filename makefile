@@ -20,8 +20,8 @@ MV=mv
 GREP=grep
 DOXYGEN=doxygen
 
-#OBJECTS=simple_message_client.o
-OBJECTS=simple_message_client.o
+OBJECTSCLNT=simple_message_client.o
+OBJECTSSERV=simple_message_server.o
 
 EXCLUDE_PATTERN=footrulewidth
 
@@ -37,11 +37,11 @@ EXCLUDE_PATTERN=footrulewidth
 ##
 
 #all: simple_message_client
-all: simple_message_client
-simple_message_client: $(OBJECTS)
+all: simple_message_client simple_message_server
+simple_message_client: $(OBJECTSCLNT)
 	$(CC) $(CFLAGS) simple_message_client.o -lsimple_message_client_commandline_handling -o my_simple_message_client
 
-simple_message_server: $(OBJECTS)	
+simple_message_server: $(OBJECTSSERV)	
 	$(CC) $(CFLAGS) simple_message_server.o  -o my_simple_message_server
 	
 clean:
